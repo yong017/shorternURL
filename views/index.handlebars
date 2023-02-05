@@ -1,3 +1,25 @@
-<h2>
-  hello world its working
-</h2>
+{{#if shortURL}}
+<div class="result">
+  <h3> Success! Please use this link :</h3>
+  <p id="generatedURL">{{origin}}/{{shortURL}}</p>
+</div>
+<button class="copy" onclick="copy()">Copy</button>
+{{!-- 點擊時會執行 onclick function --}}
+<script>
+  function copy() {
+    const URL = document.getElementById("generatedURL")
+    navigator.clipboard.writeText(URL.innerText)
+      .then(() => alert('copied')) //彈出視窗
+      .catch(error => console.log(error))
+  }
+</script>
+
+{{else}}
+<form action="/" method="POST">
+  <div class="container">
+    <input type="url" name="url" placeholder="INPUT URL HERE" required />
+    <button class="shorten" type="submit">Shorten</button>
+  </div>
+</form>
+
+{{/if}}
