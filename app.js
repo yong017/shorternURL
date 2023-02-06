@@ -2,10 +2,10 @@ const express = require('express')
 const port = 3000
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
+const bodyParser = require('body-parser')
 
 const URL = require("./models/shortren")
-const shortenURL = require("./utils/shortenURL")
-
+const shortenURL = require("./utils/shortenURL.js")
 
 // 加入這段 code, 僅在非正式環境時, 使用 dotenv
 if (process.env.NODE_ENV !== 'produciton') {
@@ -25,14 +25,17 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
+
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
+app.use(express.urlencoded());
 
 app.get('/', (req, res) => {
   res.render('index')
 })
 
 app.post('/', (req, res) => {
+  console.log('post work')
   if (!req.body.url) return res.redirect("/") //name = "url"
   const shortURL = shortenURL(5)
 
