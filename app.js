@@ -2,10 +2,10 @@ const express = require('express')
 const port = 3000
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
-const bodyParser = require('body-parser')
+
 
 const URL = require("./models/shortren")
-const shortenURL = require("./utils/shortenURL.js")
+const shortenURL = require("./utils/shortenURL")
 
 // 加入這段 code, 僅在非正式環境時, 使用 dotenv
 if (process.env.NODE_ENV !== 'produciton') {
@@ -37,9 +37,9 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
   console.log('post work')
   if (!req.body.url) return res.redirect("/") //name = "url"
-  const shortURL = shortenURL(5)
+  const shortURL = shortenURL(5) //require on top 
 
-  URL.findOne({ originalurl: req.body.url })
+  URL.findOne({ originalURL: req.body.url })
     .then(data =>
       data ? data : URL.create({ shortURL, originalURL: req.body.url })
     )
@@ -50,7 +50,22 @@ app.post('/', (req, res) => {
       })
     )
     .catch(error => console.log(error))
+})
 
+app.get('/:shortURL', (req, res) => {
+  const { shortURL } = req.params //ES6 特殊用法
+
+  URL.findOne({ shortURL })
+    .then(data => {
+      if (!data) {
+        return res.render('error', {
+          errorMsg: "Can't found the URL",
+          errorURL: req.headers.host + "/" + shortURL,//?
+        })
+      }
+      res.redirect(data.originalURL)//?
+    })
+    .catch(error => console.error(error))
 })
 
 app.listen(port, () => {
